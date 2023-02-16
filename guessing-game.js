@@ -11,12 +11,12 @@ function readlineInterface () {
 };
 
 
-//rl.close();
-
-
-
+/**
+ * MAIN
+ */
 askRange();
-//askGuess();
+
+let numAttempts = 5;
 
 
 
@@ -30,23 +30,31 @@ askRange();
  * @returns {boolean} True if equal, false if not equal.
  */
 function checkGuess (num) {
-    // if num > secretNumber, print 'too high' and return false
-    if (num > secretNumber) {
-        console.log("Too high.");
-        //askGuess();
-        return false;
+    if (numAttempts > 0) {
+        // decrement attempts
+        numAttempts -= 1;
+
+        // if num > secretNumber, print 'too high' and return false
+        if (num > secretNumber) {
+            console.log("Too high.");
+            //askGuess();
+            return false;
+        }
+        // if num < secretNumber, print 'too low' and return false
+        else if (num < secretNumber) {
+            console.log("Too low.");
+            //askGuess();
+            return false;
+        }
+        // if num = seretNumber, print 'Correct!' and return true
+        else {
+            console.log("Correct!");
+            return true;
+        }
     }
-    // if num < secretNumber, print 'too low' and return false
-    else if (num < secretNumber) {
-        console.log("Too low.");
-        //askGuess();
-        return false;
-    }
-    // if num = seretNumber, print 'Correct!' and return true
-    else {
-        console.log("Correct!");
-        return true;
-    }
+
+    console.log("You Lose");
+    return true;
 };
 
 /**
@@ -84,12 +92,40 @@ function askRange () {
     const rl = readlineInterface();
 
     // ask user to enter min
-    rl.question("Enter a minimum: ", (minimum) => {
-        rl.question("Enter a maximum: ", (maximum) => {
+    let minimum = 0;
+    let maximum = 0;
+    askMin();
+
+    function askMin() {
+        // ask user input minimum
+        rl.question("Enter a minimum: ", handleMinimumInput);
+    }
+
+    function handleMinimumInput(min) {
+        minimum = Number(min);
+
+        // check for valid user input and continue, else call askMin again
+        if (Number.isInteger(minimum)) {
+            rl.question("Enter a maximum: ", handleMaximumInput);
+        } else {
+            console.log("Not a valid number.");
+            askMin();
+        }
+    }
+
+    function handleMaximumInput(max) {
+        maximum = Number(max);
+
+        // check valid user input and continue, else call handleMinimumInput again
+        if (Number.isInteger(maximum)) {
             console.log(`I'm thinking of a number between ${minimum} and ${maximum} ...`);
 
-            secretNumber = randomInRange(Number(minimum), Number(maximum));
+            secretNumber = randomInRange(minimum, maximum);
             askGuess(rl);
-        });
-    });
+        } else {
+            console.log("Not a valid number.");
+            handleMinimumInput(minimum);
+        }
+    }
+
 };
