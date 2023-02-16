@@ -14,9 +14,8 @@ function readlineInterface () {
 /**
  * MAIN
  */
-askRange();
-
-let numAttempts = 5;
+askLimit();
+let numAttempts = 0;
 
 
 
@@ -59,6 +58,8 @@ function checkGuess (num) {
 
 /**
  * Call readline to ask for a user guess. Close readline when user guesses correctly.
+ *
+* @param {readline} rl continue using readline interface
  */
 function askGuess (rl) {
     rl.question("Enter a guess: ", (answer) => {
@@ -88,9 +89,37 @@ function randomInRange(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 };
 
-function askRange () {
+/**
+ * Use readline to get user input for the number of attempts allowed.
+ */
+function askLimit () {
     const rl = readlineInterface();
 
+    askLimitClosure();
+    function askLimitClosure () {
+        rl.question("Enter maximum turn attempts: ", (limit) => {
+            limit = Number(limit);
+
+            // check for valid user input and continue, else call askLimitClosure again
+            if (Number.isInteger(limit)) {
+                numAttempts = limit;
+                askRange(rl);
+            } else {
+                console.log("Not a valid number.");
+                askLimitClosure();
+            }
+        });
+    };
+
+
+};
+
+/**
+ * Use readline to get user input for the minumum and maximum range of number to guess.
+ *
+ * @param {readline} rl continue using readline interface
+ */
+function askRange (rl) {
     // ask user to enter min
     let minimum = 0;
     let maximum = 0;
@@ -99,7 +128,7 @@ function askRange () {
     function askMin() {
         // ask user input minimum
         rl.question("Enter a minimum: ", handleMinimumInput);
-    }
+    };
 
     function handleMinimumInput(min) {
         minimum = Number(min);
@@ -111,7 +140,7 @@ function askRange () {
             console.log("Not a valid number.");
             askMin();
         }
-    }
+    };
 
     function handleMaximumInput(max) {
         maximum = Number(max);
@@ -126,6 +155,6 @@ function askRange () {
             console.log("Not a valid number.");
             handleMinimumInput(minimum);
         }
-    }
+    };
 
 };
